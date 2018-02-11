@@ -8,26 +8,43 @@ import java.util.Arrays;
 
 public class PayloadUtils {
 
-	public static void sendStatus(String player){
-		Document doc = new Document("inqueue", Cache.players.containsKey(player));
-		if(Cache.players.containsKey(player)){
-			QueueServer queueServer = Cache.players.get(player);
-			doc.append("server", queueServer.getServer().getServerName());
-			doc.append("priority", queueServer.getPriorities().get(player));
-			doc.append("position", Arrays.asList(queueServer.getPriorities().keySet().toArray()).indexOf(player));
-		}
-		RedisDatabase.getPublisher().write("statusof;" + player + ";" + doc.toJson() + ";placeholder");
+	public static void sendPlayerMessage(String player, String message){
+		Document document = new Document("type", "message")
+				.append("player", player)
+				.append("message", message);
+		System.out.println("payload;" + player + ";" + document.toJson() + ";placeholder");
+		RedisDatabase.getPublisher().write("payload;" + player + ";" + document.toJson() + ";placeholder");
 	}
 
-	public static void sendQueueStatus(QueueServer queueServer){
-		Document document = new Document("size", queueServer.getPlayers().size())
-				.append("running", queueServer.isRunning())
-				.append("server", new Document("name", queueServer.getServer().getServerName())
-						.append("online", queueServer.getServer().getOnline())
-						.append("max", queueServer.getServer().getMax())
-						.append("whitelist", queueServer.getServer().isWhitelist())
-				);
-		RedisDatabase.getPublisher().write("queuestatus;" + queueServer.getServer().getServerName() + ";" + document.toJson() + ";placeholder");
+	public static void sendStatus(){
+		Cache.servers.forEach(server -> {
+			QueueServer queueServer = server.getQueueServer();
+			Document document = new Document("type", "queue")
+					.append("up", server.isUp())
+					.append("server", server.getServerName())
+					.append("online", server.getOnline())
+					.append("max", server.getMax())
+					.append("whitelist", server.isWhitelist())
+					.append("size", queueServer.getPlayers().size())
+					.append("players", Arrays.toString(queueServer.getPlayers().toArray()))
+					.append("priorities", queueServer.getPriorities())
+					.append("running", queueServer.isRunning());
+			RedisDatabase.getPublisher().write("payload;" + server.getServerName() + ";" + document.toJson() + ";placeholder");
+		});
 	}
+//addplayer hcf sergivb01 1
+	/*private static Document getPlayerStuff(QueueServer queueServer){
+		List<Document> docs = new ArrayList<>();
+
+		for(String str : queueServer.getPriorities().keySet()){
+			Document doc = new Document("player", str)
+					.append("position", Arrays.asList(queueServer.getPriorities().keySet().toArray()).indexOf(str))
+					.append("priority", queueServer.getPriorities().get(str));
+			docs.add(doc);
+		}
+
+		return new Document("players", docs);
+	}*/
+
 
 }

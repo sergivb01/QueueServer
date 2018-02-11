@@ -6,12 +6,13 @@ import me.sergivb01.queueserver.utils.Cache;
 import me.sergivb01.queueserver.servers.Server;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 public class QueueServer {
 	@Getter private Server server;
 	@Getter PriorityQueue<String> players = new PriorityQueue<>(new QueueComparator());
-	@Getter private HashMap<String, Integer> priorities = new HashMap<>();
+	@Getter private Map<String, Integer> priorities = new HashMap<>();
 	@Getter @Setter private boolean running = true;
 
 	public QueueServer(Server server){

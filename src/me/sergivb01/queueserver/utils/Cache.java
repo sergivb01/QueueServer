@@ -22,6 +22,10 @@ public class Cache {
 	}
 
 	private static boolean canRun(QueueServer queueServer){
+		/*System.out.println("=============================================");
+		System.out.println(queueServer.getServer().isUp());
+		System.out.println(queueServer.getServer().getOnline() + "/" + queueServer.getServer().getMax());
+		System.out.println(queueServer.getServer().getServerName() + " Running: " + queueServer.isRunning() + " Size: " + queueServer.getPriorities().size());*/
 		return (queueServer.isRunning() && queueServer.getPlayers().size() != 0 && queueServer.getPriorities().size() != 0 && queueServer.getServer().getOnline() < queueServer.getServer().getMax());
 	}
 
@@ -35,7 +39,6 @@ public class Cache {
 			queueServer.getPriorities().remove(player);
 			players.remove(player);
 
-			PayloadUtils.sendStatus(player);
 		});
 	}
 

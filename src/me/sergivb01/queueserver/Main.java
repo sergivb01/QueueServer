@@ -19,6 +19,7 @@ public class Main {
         Config.serverNames.forEach(s -> {
             Server srv = new Server(s);
             srv.createQueue();
+            srv.getQueueServer().setRunning(false);
             Cache.servers.add(srv);
 
         });
@@ -27,17 +28,15 @@ public class Main {
 		    @Override
 		    public void run () {
 			    Cache.servers.forEach(Server::reqNewStatus);
-			    Cache.queues.forEach(PayloadUtils::sendQueueStatus);
 		    }
 	    },1000, 3000);
 
 	    new Timer().scheduleAtFixedRate(new TimerTask() {
 		    @Override
 		    public void run () {
-			    Cache.queues.forEach(queueServer -> queueServer.getPlayers().forEach(PayloadUtils::sendStatus));
+			    PayloadUtils.sendStatus();
 		    }
 	    },1000, 5000);
-
 
 	    new Timer().scheduleAtFixedRate(new TimerTask() {
 		    @Override

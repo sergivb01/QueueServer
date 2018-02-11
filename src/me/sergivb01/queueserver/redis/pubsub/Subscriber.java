@@ -1,9 +1,10 @@
 package me.sergivb01.queueserver.redis.pubsub;
 
 import lombok.Getter;
-import me.sergivb01.queueserver.utils.Config;
 import me.sergivb01.queueserver.utils.Cache;
+import me.sergivb01.queueserver.utils.Config;
 import me.sergivb01.queueserver.utils.PayloadParser;
+import org.bson.Document;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
@@ -28,16 +29,20 @@ public class Subscriber {
 			@Override
 			public void onMessage(final String channel, final String message) {
 				final String[] args = message.split(";");
+				//System.out.println(Arrays.toString(args));
 				if (args.length > 2) {
 					final String command = args[0].toLowerCase();
 					final String server = args[1];
 					final String payload = args[2];
 					switch (command) {
-						case "serverstatus":
-							Cache.getServerByName(server).updateData(payload);
-							break;
 						case "payload":
-							PayloadParser.parse(payload);
+							Document document = Document.parse(payload);
+							if(document.getString("type").equalsIgnoreCase("serverstatus")){
+								Cache.getServerByName(server).updateData(payload);
+							}
+							if(document.getString("type").equalsIgnoreCase("addplayer") || document.getString("type").equalsIgnoreCase("removeplayer")){
+								PayloadParser.parse(payload);
+							}
 							break;
 						default:
 							//System.out.println("I don't know how to handle this dude! [" + message + "]");
