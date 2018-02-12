@@ -25,8 +25,7 @@ public class Server {
 		RedisDatabase.getPublisher().write("reqserverstatus;" + serverName);
 	}
 
-	public void updateData(String payload){
-		Document document = Document.parse(payload);
+	public void updateData(Document document){
 		this.up = document.getBoolean("up");
 		this.online = document.getInteger("online");
 		this.whitelist = document.getBoolean("whitelist");

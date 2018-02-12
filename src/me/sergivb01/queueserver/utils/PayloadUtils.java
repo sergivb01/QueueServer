@@ -32,6 +32,12 @@ public class PayloadUtils {
 			RedisDatabase.getPublisher().write("payload;" + server.getServerName() + ";" + document.toJson() + ";placeholder");
 		});
 	}
+
+	public static void sendBackendStatus (boolean up) {
+		Document document = new Document("type", "backend")
+				.append("up", up);
+		RedisDatabase.getPublisher().write("payload;backend;" + document.toJson() + ";placeholder");
+	}
 //addplayer hcf sergivb01 1
 	/*private static Document getPlayerStuff(QueueServer queueServer){
 		List<Document> docs = new ArrayList<>();

@@ -10,8 +10,8 @@ public class Config {
 
 	static {
 		serverNames.add("hcf");
-		//serverNames.add("kits");
-		//serverNames.add("lite");
+		serverNames.add("kits");
+		serverNames.add("lite");
 	}
 
 }

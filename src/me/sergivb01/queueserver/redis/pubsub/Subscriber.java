@@ -38,9 +38,10 @@ public class Subscriber {
 						case "payload":
 							Document document = Document.parse(payload);
 							if(document.getString("type").equalsIgnoreCase("serverstatus")){
-								Cache.getServerByName(server).updateData(payload);
-							}
-							if(document.getString("type").equalsIgnoreCase("addplayer") || document.getString("type").equalsIgnoreCase("removeplayer")){
+								try {
+									Cache.getServerByName(server).updateData(document);
+								}catch (Exception ignore){}
+							}else if(document.getString("type").equalsIgnoreCase("addplayer") || document.getString("type").equalsIgnoreCase("removeplayer") || document.getString("type").equalsIgnoreCase("pause")){
 								PayloadParser.parse(payload);
 							}
 							break;

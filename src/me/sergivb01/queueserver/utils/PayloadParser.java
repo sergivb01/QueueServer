@@ -9,6 +9,12 @@ public class PayloadParser {
 		Document document = Document.parse(str);
 		//System.out.println("[DEBUG 2] " + document.toJson());
 		switch (document.getString("type")){
+			case "pause": {
+				String server = document.getString("server");
+				Cache.getQueueByName(server).setRunning(!Cache.getQueueByName(server).isRunning());
+				PayloadUtils.sendPlayerMessage("server", "&9Queue &f" + server + " &9is now " + (Cache.getQueueByName(server).isRunning() ? "&arunning" : "&cpaused") + "&9!");
+				break;
+			}
 			case "addplayer": {
 				String player = document.getString("player");
 				String server = document.getString("server");
@@ -17,7 +23,7 @@ public class PayloadParser {
 				if(!Cache.getQueueByName(server).getPlayers().contains(player)){
 					Cache.getQueueByName(server).addPlayer(player, prio);
 					System.out.println("added " + player + " to " + server + " with " + prio + " of priotity");
-					PayloadUtils.sendPlayerMessage(player, "&9You have been added to &c" + server + " &9with a priority of &c" + prio);
+					PayloadUtils.sendPlayerMessage(player, "&9You have been added to &f" + server + " &9with a priority of &f" + prio);
 				}else{
 					PayloadUtils.sendPlayerMessage(player, "&cYou already are in a queue.");
 				}

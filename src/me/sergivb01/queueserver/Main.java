@@ -1,5 +1,7 @@
 package me.sergivb01.queueserver;
 
+import com.instrumentalapp.Agent;
+import com.instrumentalapp.AgentOptions;
 import me.sergivb01.queueserver.redis.RedisDatabase;
 import me.sergivb01.queueserver.servers.Server;
 import me.sergivb01.queueserver.utils.Cache;
@@ -31,10 +33,13 @@ public class Main {
 		    }
 	    },1000, 3000);
 
+
+	    Agent agent = new Agent(new AgentOptions().setApiKey("85616bb982836858100b94fd087a5311").setEnabled(true));
 	    new Timer().scheduleAtFixedRate(new TimerTask() {
 		    @Override
 		    public void run () {
 			    PayloadUtils.sendStatus();
+			    Cache.queues.forEach(queueServer -> agent.gauge("mcserver.queue." + queueServer.getServer().getServerName() + ".size", queueServer.getPlayers().size()));
 		    }
 	    },1000, 5000);
 
@@ -88,7 +93,7 @@ public class Main {
                     String player = args[2];
                     Integer priority = Integer.parseInt(args[3]);
 
-	                if(!Cache.getQueueByName(queue).getPlayers().contains(player)) {
+	                if(!Cache.players.containsKey(queue)) {
 		                Cache.getQueueByName(queue).addPlayer(player, priority);
 		                System.out.println("Added " + player + " to " + queue + " with priority=" + priority);
 	                }
@@ -97,7 +102,10 @@ public class Main {
                 case "removeplayer": {
                     String queue = args[1];
                     String player = args[2];
-                    Cache.getQueueByName(queue).removePlayer(player);
+	                if(Cache.players.containsKey(queue)) {
+		                Cache.players.get(player).removePlayer(player);
+		                System.out.println("removed " + player + " from " + queue);
+	                }
                     break;
                 }
                 case "clear": {
@@ -111,6 +119,8 @@ public class Main {
 
         }
 
+        PayloadUtils.sendBackendStatus(false);
+		PayloadUtils.sendPlayerMessage("server", "&aQueue system backend is currently down. Queues have been disabled.");
 
         RedisDatabase.getSubscriber().getJedisPubSub().unsubscribe();
         RedisDatabase.getPublisher().getPool().destroy();

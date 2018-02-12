@@ -11,5 +11,6 @@
     <orderEntry type="library" name="jedis-2.4.2" level="project" />
     <orderEntry type="library" name="commons-pool2-2.4.2" level="project" />
     <orderEntry type="library" name="mongo-java-driver-3.6.1" level="project" />
+    <orderEntry type="library" name="instrumental_agent-1.0.0" level="project" />
   </component>
 </module>
